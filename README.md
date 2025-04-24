@@ -85,10 +85,13 @@ go run .
 ## 📱 Screenshots
 
 ### User Queue Interface
-![]("./assets/image.png")
+
+#### Default Page
+<img src="./assets/main.jpeg" />
+<img src="./assets/image.png" />
 
 ### Admin Dashboard
-![Admin Dashboard](https://via.placeholder.com/400x200?text=Admin+Dashboard)
+<img src="./assets/screencapture-localhost-8080-users-2025-04-24-22_20_00.png" />
 
 ## 🔄 How It Works
 
@@ -105,15 +108,6 @@ go run .
    - Each user gets 1 minute to complete their booking
    - After timeout, user status changes to "expired"
 
-## 🔧 Future Improvements
-
-- WebSocket implementation for real-time updates
-- Redis integration for distributed queue management
-- Authentication for admin dashboard
-- User session persistence
-- Dynamic timeout configuration
-- Multiple concurrent active users
-- Analytics dashboard for queue metrics
 
 ## 🙏 Acknowledgements
 
