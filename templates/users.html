@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Users Queue</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #ebe9ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #0ea5e9;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--gray-100);
+      color: var(--gray-800);
+      line-height: 1.5;
+      padding: 1.5rem;
+    }
+    
+    .app-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .app-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--gray-800);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .app-subtitle {
+      color: var(--gray-700);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    
+    .queue-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 150px;
+      max-width: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .stat-value {
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--gray-700);
+      text-align: center;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+    }
+    
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    .table-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    
+    .refresh-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--gray-700);
+    }
+    
+    .refresh-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.4;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    thead tr {
+      background-color: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--gray-700);
+      white-space: nowrap;
+    }
+    td {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    
+    tbody tr:hover {
+      background-color: var(--gray-50);
+    }
+    
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+    .user-id {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    
+    .status-badge.waiting {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    
+    .status-badge.queued {
+      background-color: #cffafe;
+      color: #155e75;
+    }
+    
+    .status-badge.active {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    
+    .status-badge.expired {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .position-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+    
+    .position-badge {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary);
+      color: white;
+      border-radius: 50%;
+      font-weight: 600;
+    }
+    
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: var(--gray-700);
+    }
+    
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--gray-300);
+    }
+    
+    .empty-state-message {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .empty-state-description {
+      font-size: 0.875rem;
+    }
+    
+    .time-ago {
+      color: var(--gray-700);
+      font-size: 0.875rem;
+    }
+    
+    @media (max-width: 768px) {
+      .queue-stats {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      
+      .stat-card {
+        flex: 1 0 calc(50% - 1rem);
+        max-width: none;
+      }
+      
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      
+      thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+      }
+      
+      tr {
+        border-bottom: 1px solid var(--gray-200);
+        padding: 1rem 0;
+      }
+      
+      tr:last-child {
+        border-bottom: none;
+      }
+      
+      td {
+        position: relative;
+        padding: 0.75rem 1rem;
+        padding-left: 40%;
+        border: none;
+        text-align: left;
+      }
+      
+      td:before {
+        position: absolute;
+        top: 0.75rem;
+        left: 1rem;
+        width: 35%;
+        padding-right: 10px;
+        white-space: nowrap;
+        content: attr(data-label);
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: var(--gray-700);
+        text-transform: uppercase;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">🔄 Live Queue Users</h1>
+    <p class="app-subtitle">Real-time user queue monitoring dashboard</p>
+  </header>
+  
+  <div class="queue-stats">
+    <div class="stat-card">
+      <div class="stat-value" id="total-users">--</div>
+      <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="active-users">--</div>
+      <div class="stat-label">Active Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="waiting-users">--</div>
+      <div class="stat-label">Waiting</div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="table-header">
+      <h2 class="table-title">Queue Status</h2>
+      <div class="refresh-info">
+        <div class="refresh-dot"></div>
+        <span id="last-updated">Updating live</span>
+      </div>
+    </div>
+    
+    <div id="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Position</th>
+          </tr>
+        </thead>
+        <tbody id="users-table-body">
+          <!-- Populated via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Format time ago function
+    function timeAgo(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      
+      let interval = seconds / 31536000;
+      if (interval > 1) return Math.floor(interval) + " years ago";
+      
+      interval = seconds / 2592000;
+      if (interval > 1) return Math.floor(interval) + " months ago";
+      
+      interval = seconds / 86400;
+      if (interval > 1) return Math.floor(interval) + " days ago";
+      
+      interval = seconds / 3600;
+      if (interval > 1) return Math.floor(interval) + " hours ago";
+      
+      interval = seconds / 60;
+      if (interval > 1) return Math.floor(interval) + " minutes ago";
+      
+      if (seconds < 10) return "just now";
+      
+      return Math.floor(seconds) + " seconds ago";
+    }
+    
+    // Get user initials
+    function getUserInitials(userId) {
+      // Extract alphanumeric characters from userId
+      const alphanumeric = userId.replace(/[^a-z0-9]/gi, '');
+      if (alphanumeric.length >= 2) {
+        return alphanumeric.substring(0, 2).toUpperCase();
+      }
+      return alphanumeric.substring(0, 1).toUpperCase() + '0';
+    }
+
+    async function loadUsers() {
+      try {
+        const response = await fetch('/users-data');
+        const users = await response.json();
+        
+        // Update stats
+        document.getElementById('total-users').textContent = users.length;
+        document.getElementById('active-users').textContent = users.filter(u => u.status === 'active').length;
+        document.getElementById('waiting-users').textContent = users.filter(u => u.status === 'waiting' || u.status === 'queued').length;
+        
+        const tbody = document.getElementById('users-table-body');
+        const tableContainer = document.getElementById('table-container');
+        
+        // Update last updated time
+        document.getElementById('last-updated').textContent = 'Updated just now';
+        
+        // Handle empty state
+        if (users.length === 0) {
+          tableContainer.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">👥</div>
+              <div class="empty-state-message">No users in queue</div>
+              <div class="empty-state-description">The queue is currently empty. Users will appear here when they join.</div>
+            </div>
+          `;
+          return;
+        }
+        
+        // Ensure we have the table if there are users
+        if (!document.querySelector('table')) {
+          tableContainer.innerHTML = `
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th>Position</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          `;
+          tbody = document.getElementById('users-table-body');
+        }
+        
+        tbody.innerHTML = '';
+        users.forEach(user => {
+          const joinedDate = new Date(user.joined_at);
+          const tr = document.createElement('tr');
+          
+          // Create row with improved UI
+          tr.innerHTML = `
+            <td data-label="User">
+              <div class="user-id">
+                <div class="user-avatar">${getUserInitials(user.id)}</div>
+                ${user.id}
+              </div>
+            </td>
+            <td data-label="Status">
+              <span class="status-badge ${user.status}">${user.status}</span>
+            </td>
+            <td data-label="Joined">
+              <span class="time-ago">${timeAgo(joinedDate)}</span>
+            </td>
+            <td data-label="Position">
+              ${user.position ? `
+                <div class="position-indicator">
+                  <div class="position-badge">${user.position}</div>
+                  in queue
+                </div>
+              ` : '-'}
+            </td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      } catch (error) {
+        console.error('Failed to load users data:', error);
+      }
+    }
+    loadUsers();
+    
+    setInterval(() => {
+      const lastUpdatedEl = document.getElementById('last-updated');
+      if (lastUpdatedEl.textContent === 'Updated just now') {
+        lastUpdatedEl.textContent = 'Updated seconds ago';
+      }
+    }, 10000);
+    setInterval(loadUsers, 5000);
+  </script>
+</body>
+</html>

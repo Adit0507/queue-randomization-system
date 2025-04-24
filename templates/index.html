@@ -4,86 +4,418 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>BookMyShow Queue Simulation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f8f9fa;
+    :root {
+      --bms-red: #e71c24;
+      --bms-red-dark: #c4141b;
+      --bms-red-light: #ff4d54;
+      --bms-gray-dark: #333333;
+      --bms-gray-medium: #666666;
+      --bms-gray-light: #e5e5e5;
+      --white: #ffffff;
+      --ticket-bg: #fdfcfc;
+    }
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto', 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      background-image: linear-gradient(45deg, rgba(231,28,36,0.03) 25%, transparent 25%, transparent 75%, rgba(231,28,36,0.03) 75%, rgba(231,28,36,0.03)), 
+                        linear-gradient(45deg, rgba(231,28,36,0.03) 25%, transparent 25%, transparent 75%, rgba(231,28,36,0.03) 75%, rgba(231,28,36,0.03));
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      color: #333;
+      color: var(--bms-gray-dark);
     }
-
     .container {
-      background-color: #fff;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-      width: 90%;
-      max-width: 500px;
+      background-color: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 480px;
+      overflow: hidden;
+    }
+    .header {
+      background: var(--bms-red);
+      padding: 20px;
+      color: white;
+      position: relative;
+    }
+    .header-pattern {
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 100%;
+      width: 40%;
+      background-image: url("/api/placeholder/200/100");
+      background-size: cover;
+      opacity: 0.1;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+    .header p {
+      margin-top: 6px;
+      font-size: 14px;
+      opacity: 0.9;
+      position: relative;
+    } 
+    .content {
+      padding: 24px;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .primary-btn, .secondary-btn {
+      flex: 1;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .primary-btn {
+      background-color: var(--bms-red);
+      color: white;
+      box-shadow: 0 4px 12px rgba(231, 28, 36, 0.3);
+    }
+    .primary-btn:hover {
+      background-color: var(--bms-red-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(231, 28, 36, 0.4);
+    }
+    .secondary-btn {
+      background-color: rgba(231, 28, 36, 0.1);
+      color: var(--bms-red);
+    }
+    
+    .secondary-btn:hover {
+      background-color: rgba(231, 28, 36, 0.15);
+    }
+    
+    .ticket {
+      background-color: var(--ticket-bg);
+      border-radius: 12px;
+      border: 1px dashed var(--bms-gray-light);
+      padding: 20px;
+      position: relative;
+      margin-top: 20px;
+    }
+    
+    .ticket::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: var(--white);
+      border-radius: 50%;
+      border: 1px dashed var(--bms-gray-light);
+    }
+    
+    .ticket::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background-color: var(--white);
+      border-radius: 50%;
+      border: 1px dashed var(--bms-gray-light);
+    }
+    
+    .ticket-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed var(--bms-gray-light);
+      margin-bottom: 15px;
+    }
+    
+    .ticket-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--bms-gray-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .ticket-icon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: rgba(231, 28, 36, 0.1);
+      color: var(--bms-red);
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--bms-gray-light);
+    }
+    
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      font-size: 14px;
+      color: var(--bms-gray-medium);
+    }
+    
+    .info-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--bms-gray-dark);
+    }
+    
+    .highlight {
+      color: var(--bms-red);
+      font-weight: 700;
+    }
+    
+    .progress-container {
+      margin-top: 24px;
       text-align: center;
     }
-
-    h1 {
-      color: #e71c24;
-      margin-bottom: 1rem;
+    
+    .progress-bar {
+      height: 8px;
+      background-color: var(--bms-gray-light);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0 15px;
     }
-
-    button {
-      background-color: #e71c24;
-      color: #fff;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      margin: 0.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
+    
+    .progress-fill {
+      height: 100%;
+      background-color: var(--bms-red);
+      width: 30%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
     }
-
-    button:hover {
-      background-color: #c4141b;
+    
+    .status-message {
+      font-size: 13px;
+      color: var(--bms-gray-medium);
     }
-
-    .info {
-      margin-top: 2rem;
-      text-align: left;
+    
+    .refresh-indicator {
+      position: relative;
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(231, 28, 36, 0.3);
+      border-top: 2px solid var(--bms-red);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+      margin-right: 6px;
+      vertical-align: middle;
     }
-
-    .info h2 {
-      color: #333;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 0.5rem;
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
-
-    .info p {
-      margin: 0.5rem 0;
+    
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: var(--bms-gray-medium);
+      border-top: 1px solid var(--bms-gray-light);
     }
-
-    .label {
-      font-weight: bold;
-      color: #555;
+    
+    .footer a {
+      color: var(--bms-red);
+      text-decoration: none;
     }
-
-    .highlight {
-      font-weight: bold;
-      color: #e71c24;
+    
+    .not-joined {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 0;
+    }
+    
+    .not-joined-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+      color: var(--bms-gray-light);
+    }
+    
+    .not-joined-message {
+      font-size: 16px;
+      color: var(--bms-gray-medium);
+      margin-bottom: 8px;
+    }
+    
+    .not-joined-sub {
+      font-size: 13px;
+      color: var(--bms-gray-medium);
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        border-radius: 12px;
+      }
+      
+      .actions {
+        flex-direction: column;
+      }
+      
+      .primary-btn, .secondary-btn {
+        width: 100%;
+      }
     }
   </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-pattern"></div>
+      <h1>🎫 BookMyShow Queue</h1>
+      <p>Fast & fair ticketing queue system</p>
+    </div>
+    <div class="content">
+      <div class="actions">
+        <button class="primary-btn" onclick="joinQueue()">
+          <span>👋</span> Join Queue
+        </button>
+        <button class="secondary-btn" onclick="startQueue()">
+          <span>▶️</span> Start Queue
+        </button>
+      </div>
+      
+      <div id="ticket-container">
+        <!-- This will be replaced once user joins queue -->
+        <div class="not-joined" id="not-joined-view">
+          <div class="not-joined-icon">🎟️</div>
+          <p class="not-joined-message">You're not in the queue yet</p>
+          <p class="not-joined-sub">Click "Join Queue" to get your spot</p>
+        </div>
+        
+        <!-- This will appear after user joins -->
+        <div class="ticket" id="ticket-view" style="display: none;">
+          <div class="ticket-header">
+            <div class="ticket-title">
+              <div class="ticket-icon">🎟️</div>
+              Your Queue Position
+            </div>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">User ID</span>
+            <span class="info-value" id="user-id">-</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">Status</span>
+            <span class="info-value" id="status">-</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="info-label">Queue Position</span>
+            <span class="info-value highlight" id="position">-</span>
+          </div>
+        </div>
+        
+        <div class="progress-container" id="progress-container" style="display: none;">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <p class="status-message">
+            <span class="refresh-indicator"></span>
+            <span id="status-message">Waiting for your turn...</span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      BookMyShow Queue Simulator &copy; 2025 | <a href="#">Terms & Conditions</a>
+    </div>
+  </div>
+
   <script>
+    let queueJoined = false;
+
     async function joinQueue() {
-      const response = await fetch('/join');
-      const data = await response.json();
-      document.getElementById('user-id').textContent = data.user_id;
-      checkStatus(data.user_id);
+      try {
+        const response = await fetch('/join');
+        const data = await response.json();
+        
+        // Hide not joined view
+        document.getElementById('not-joined-view').style.display = 'none';
+        
+        // Show ticket and progress
+        document.getElementById('ticket-view').style.display = 'block';
+        document.getElementById('progress-container').style.display = 'block';
+        
+        // Fill user data
+        document.getElementById('user-id').textContent = data.user_id;
+        queueJoined = true;
+        
+        // Start checking status
+        checkStatus(data.user_id);
+      } catch (error) {
+        console.error('Error joining queue:', error);
+        alert('Failed to join queue. Please try again.');
+      }
     }
 
     async function startQueue() {
-      await fetch('/start');
-      alert('Queue processing started!');
+      try {
+        await fetch('/start');
+        
+        // Show success message in status
+        const statusMessage = document.getElementById('status-message');
+        statusMessage.textContent = 'Queue processing started!';
+        
+        // Reset after 3 seconds
+        setTimeout(() => {
+          if (queueJoined) {
+            statusMessage.textContent = 'Waiting for your turn...';
+          }
+        }, 3000);
+      } catch (error) {
+        console.error('Error starting queue:', error);
+        alert('Failed to start queue. Please try again.');
+      }
     }
 
     async function checkStatus(userId) {
@@ -93,30 +425,78 @@
         const response = await fetch(`/status?user_id=${userId}`);
         const data = await response.json();
 
+        // Update status and position
         document.getElementById('status').textContent = data.status;
         document.getElementById('position').textContent = data.position || 'Not assigned';
+        
+        // Update progress bar based on position
+        updateProgressBar(data.position, data.status);
+        
+        // Update status message based on status
+        updateStatusMessage(data.status, data.position);
 
+        // Continue polling every 5 seconds
         setTimeout(() => checkStatus(userId), 5000);
       } catch (error) {
         console.error('Error checking status:', error);
+        
+        // Still continue polling even if there's an error
+        setTimeout(() => checkStatus(userId), 5000);
       }
     }
+    
+    function updateProgressBar(position, status) {
+      const progressFill = document.getElementById('progress-fill');
+      
+      // Default width for waiting status
+      let width = 15;
+      
+      if (status === 'active') {
+        width = 100;
+      } else if (status === 'queued' && position) {
+        // Assume position 1 is 80%, position 5 is 50%, position 10+ is 20%
+        if (position === 1) width = 80;
+        else if (position <= 5) width = 70 - (position * 4);
+        else if (position <= 10) width = 50 - (position * 3);
+        else width = 20;
+      }
+      
+      progressFill.style.width = `${width}%`;
+    }
+    
+    function updateStatusMessage(status, position) {
+      const statusMessage = document.getElementById('status-message');
+      
+      if (status === 'active') {
+        statusMessage.textContent = "It's your turn! Redirecting to booking...";
+      } else if (status === 'queued' && position === 1) {
+        statusMessage.textContent = "You're next in line!";
+      } else if (status === 'queued' && position) {
+        statusMessage.textContent = `Waiting for ${position-1} people ahead of you...`;
+      } else if (status === 'waiting') {
+        statusMessage.textContent = "Waiting to be assigned a position...";
+      } else if (status === 'expired') {
+        statusMessage.textContent = "Your session has expired. Please rejoin.";
+      }
+    }
+    
+    // Initialize status of ticket visibility
+    function initializeView() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('user_id');
+      
+      if (userId) {
+        document.getElementById('not-joined-view').style.display = 'none';
+        document.getElementById('ticket-view').style.display = 'block';
+        document.getElementById('progress-container').style.display = 'block';
+        document.getElementById('user-id').textContent = userId;
+        queueJoined = true;
+        checkStatus(userId);
+      }
+    }
+    
+    // Run on page load
+    initializeView();
   </script>
-</head>
-<body>
-  <div class="container">
-    <h1>🎫 Queue Access System</h1>
-    <p>Simulating the BookMyShow queue experience.</p>
-
-    <button onclick="joinQueue()">Join Queue</button>
-    <button onclick="startQueue()">Start Queue</button>
-
-    <div class="info">
-      <h2>🔍 Your Queue Status</h2>
-      <p><span class="label">User ID:</span> <span id="user-id" class="highlight">Not joined yet</span></p>
-      <p><span class="label">Status:</span> <span id="status" class="highlight">-</span></p>
-      <p><span class="label">Position:</span> <span id="position" class="highlight">-</span></p>
-    </div>
-  </div>
 </body>
 </html>
