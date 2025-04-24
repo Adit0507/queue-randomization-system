@@ -34,18 +34,20 @@ func (q *Queue) RandomizeQueue() []string {
 	defer q.Mu.Unlock()
 
 	var userIDs []string
-	for id := range q.Users {
-		userIDs = append(userIDs, id)
+	for id, user := range q.Users {
+		// Only randomize users who are still waiting
+		if user.Status == "waiting" {
+			userIDs = append(userIDs, id)
+		}
 	}
 
+	// Shuffle logic
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	r.Shuffle(len(userIDs), func(i, j int) {
 		userIDs[i], userIDs[j] = userIDs[j], userIDs[i]
 	})
-	rand.Shuffle(len(userIDs), func(i, j int) {
-		userIDs[i], userIDs[j] = userIDs[j], userIDs[i]
-	})
 
+	// Assign positions and mark as queued
 	for pos, id := range userIDs {
 		q.Users[id].Status = "queued"
 		q.Users[id].Position = pos + 1
