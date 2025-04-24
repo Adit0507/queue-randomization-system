@@ -88,6 +88,10 @@ go run .
 - User interface: http://localhost:8080/
 - Admin dashboard: http://localhost:8080/users
 
+## 📺 Demo
+
+https://github.com/user-attachments/assets/89e1b3da-ce62-4835-90c2-cd80b6a08d1d
+
 ## 📱 Screenshots
 
 ### User Queue Interface
