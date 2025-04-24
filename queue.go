@@ -58,20 +58,23 @@ func (q *Queue) RandomizeQueue() []string {
 func (q *Queue) ProcessQueues() {
 	orderedUsers := q.RandomizeQueue()
 
-	for _, id := range orderedUsers {
-		q.Mu.Lock()
-
-		user := q.Users[id]
-		if user.Status == "queued" {
-			user.Status = "active"
-			q.Mu.Unlock()
-
-			time.Sleep(1 * time.Minute)
+	go func() {
+		for _, userID := range orderedUsers {
 			q.Mu.Lock()
+			user := q.Users[userID]
 
-			user.Status = "expired"
+			if user.Status == "queued" {
+				user.Status = "active"
+				q.Mu.Unlock()
+
+				time.Sleep(1 * time.Minute)
+
+				q.Mu.Lock()
+				user.Status = "expired"
+				q.Mu.Unlock()
+			} else {
+				q.Mu.Unlock()
+			}
 		}
-
-		q.Mu.Unlock()
-	}
+	}()
 }
