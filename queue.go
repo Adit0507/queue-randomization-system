@@ -38,7 +38,10 @@ func (q *Queue) RandomizeQueue() []string {
 		userIDs = append(userIDs, id)
 	}
 
-	rand.Seed(time.Now().UnixNano())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	r.Shuffle(len(userIDs), func(i, j int) {
+		userIDs[i], userIDs[j] = userIDs[j], userIDs[i]
+	})
 	rand.Shuffle(len(userIDs), func(i, j int) {
 		userIDs[i], userIDs[j] = userIDs[j], userIDs[i]
 	})
@@ -54,7 +57,7 @@ func (q *Queue) RandomizeQueue() []string {
 // users are handled one by one
 func (q *Queue) ProcessQueues() {
 	orderedUsers := q.RandomizeQueue()
-	
+
 	for _, id := range orderedUsers {
 		q.Mu.Lock()
 
@@ -63,7 +66,7 @@ func (q *Queue) ProcessQueues() {
 			user.Status = "active"
 			q.Mu.Unlock()
 
-			time.Sleep(1*time.Minute)
+			time.Sleep(1 * time.Minute)
 			q.Mu.Lock()
 
 			user.Status = "expired"
