@@ -1,6 +1,12 @@
 # 🎫 Queue Randomization System
 
-A BookMyShow-inspired automated queue management system that fairly randomizes user positions during high traffic events.
+A BookMyShow-inspired automated queue management system — built after surviving the Travis Scott ticket war.
+
+When Travis Scott announced his India tour, I jumped on BookMyShow like everyone else.
+What followed? A chaotic digital stampede and a mysterious queue randomization system that decided who vibes to Sicko Mode and who just… refreshes.
+
+This project is my deep dive into that madness:
+A simulation of automated queue management, built in Go, that fairly randomizes user positions during high-traffic events — like concerts, flash sales, or anything with FOMO potential.
 
 
 ## 📖 Overview
