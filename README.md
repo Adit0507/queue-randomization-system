@@ -8,7 +8,6 @@ What followed? A chaotic digital stampede and a mysterious queue randomization s
 This project is my deep dive into that madness:
 A simulation of automated queue management, built in Go, that fairly randomizes user positions during high-traffic events — like concerts, flash sales, or anything with FOMO potential.
 
----
 
 ## Table of Contents
 
@@ -25,9 +24,6 @@ A simulation of automated queue management, built in Go, that fairly randomizes 
 8. 📱 [Screenshots](#screenshots)  
 9. 🔄 [How It Works](#how-it-works)  
 10. 🙏 [Acknowledgements](#acknowledgements)
-
-
----
 
 
 ## 📖 Overview
